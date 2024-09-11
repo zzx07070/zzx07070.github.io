@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>贪吃蛇游戏</title>
+    <title>五子棋游戏</title>
     <style>
         body {
             display: flex;
@@ -15,83 +16,159 @@
         }
         canvas {
             border: 1px solid black;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            background-color: #808080;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            width: 300px;
+            height: 200px;
+            background-color: red;
+            border: 1px solid #000;
+            padding: 20px;
+            color: #fff;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1;
+        }
+        #gameOver.win {
+            background-color: green;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <canvas id="chessboard" width="420" height="420"></canvas>
+    <div id="gameOver"></div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
+        const canvas = document.getElementById('chessboard');
         const ctx = canvas.getContext('2d');
-        const gridSize = 20;
-        const tileCount = canvas.width / gridSize;
+        const boardSize = 15;
+        const cellSize = 25;
 
-        let snake = [{x: 10, y: 10}];
-        let food = {x: 15, y: 15};
-        let dx = 0, dy = 0;
-        let score = 0;
+        let board = [];
+        let currentPlayer = 'black';
+        let gameOver = false;
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'green';
-            snake.forEach(part => ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize, gridSize));
-            ctx.fillStyle = 'red';
-            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+        function init() {
+            for (let i = 0; i < boardSize; i++) {
+                board[i] = [];
+                for (let j = 0; j < boardSize; j++) {
+                    board[i][j] = '';
+                }
+            }
+            drawBoard();
         }
 
-        function update() {
-            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-            snake.unshift(head);
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                food = {x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount)};
-            } else {
-                snake.pop();
+        function drawBoard() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#000';
+
+            for (let i = 0; i <= boardSize; i++) {
+                ctx.moveTo(i * cellSize + cellSize / 2, cellSize / 2);
+                ctx.lineTo(i * cellSize + cellSize / 2, boardSize * cellSize + cellSize / 2);
+            }
+
+            for (let j = 0; j <= boardSize; j++) {
+                ctx.moveTo(cellSize / 2, j * cellSize + cellSize / 2);
+                ctx.lineTo(boardSize * cellSize + cellSize / 2, j * cellSize + cellSize / 2);
+            }
+
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function drawPiece(x, y, color) {
+            ctx.beginPath();
+            ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize / 2 - 2, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function handleClick(event) {
+            if (gameOver) {
+                return;
+            }
+
+            let x = Math.floor(event.offsetX / cellSize);
+            let y = Math.floor(event.offsetY / cellSize);
+
+            if (board[x][y] === '') {
+                board[x][y] = currentPlayer;
+                drawPiece(x, y, currentPlayer === 'black'? 'black' : 'white');
+
+                if (checkForWin(x, y)) {
+                    gameOver = true;
+                    document.getElementById('gameOver').innerHTML = currentPlayer === 'black'? '黑棋获胜！' : '白棋获胜！';
+                    document.getElementById('gameOver').classList.add('win');
+                    document.getElementById('gameOver').style.display = 'block';
+                }
+
+                currentPlayer = currentPlayer === 'black'? 'white' : 'black';
             }
         }
 
-        function checkCollision() {
-            const head = snake[0];
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                return true;
-            }
-            for (let i = 1; i < snake.length; i++) {
-                if (snake[i].x === head.x && snake[i].y === head.y) {
+        function checkForWin(x, y) {
+            let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
+
+            for (let direction of directions) {
+                let count = 1;
+
+                for (let i = 1; i <= 4; i++) {
+                    let newX = x + i * direction[0];
+                    let newY = y + i * direction[1];
+
+                    if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+                        if (board[newX][newY] === currentPlayer) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                for (let i = 1; i <= 4; i++) {
+                    let newX = x - i * direction[0];
+                    let newY = y - i * direction[1];
+
+                    if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+                        if (board[newX][newY] === currentPlayer) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                if (count >= 5) {
                     return true;
                 }
             }
+
             return false;
         }
 
-        function gameLoop() {
-            if (checkCollision()) {
-                alert('游戏结束！得分：' + score);
-                document.location.reload();
-                return;
-            }
-            update();
-            draw();
-            setTimeout(gameLoop, 100);
+        function resetGame() {
+            init();
+            gameOver = false;
+            currentPlayer = 'black';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('gameOver').classList.remove('win');
         }
 
-        document.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'ArrowUp':
-                    if (dy === 0) { dx = 0; dy = -1; }
-                    break;
-                case 'ArrowDown':
-                    if (dy === 0) { dx = 0; dy = 1; }
-                    break;
-                case 'ArrowLeft':
-                    if (dx === 0) { dx = -1; dy = 0; }
-                    break;
-                case 'ArrowRight':
-                    if (dx === 0) { dx = 1; dy = 0; }
-                    break;
-            }
-        });
+        canvas.addEventListener('click', handleClick);
 
-        gameLoop();
+        init();
     </script>
 </body>
 </html>
