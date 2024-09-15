@@ -1,174 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>五子棋游戏</title>
+    <title>动漫风格插图</title>
     <style>
         body {
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             background-color: #f0f0f0;
         }
-        canvas {
-            border: 1px solid black;
-            padding: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            background-color: #808080;
+        .container {
+            width: 100%;
+            height: 100%; /* 使容器充满整个视口 */
+            min-height: 50px; /* 最小高度为500px */
+            overflow: hidden; /* 溢出内容隐藏 */
+            position: relative; /* 设置相对定位 */
         }
-        #gameOver {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            width: 300px;
-            height: 200px;
-            background-color: red;
-            border: 1px solid #000;
-            padding: 20px;
-            color: #fff;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            z-index: 1;
-        }
-        #gameOver.win {
-            background-color: green;
+        .image {
+            position: absolute; /* 绝对定位 */
+            top: 50%; /* 垂直居中 */
+            left: 50%; /* 水平居中 */
+            width: 100%; /* 宽度为100% */
+            height: auto; /* 高度自适应 */
+            min-height: 50px; /* 最小高度为500px */
+            transform: translate(-50%, -50%); /* 通过平移实现完美居中 */
         }
     </style>
 </head>
 <body>
-    <canvas id="chessboard" width="420" height="420"></canvas>
-    <div id="gameOver"></div>
-    <script>
-        const canvas = document.getElementById('chessboard');
-        const ctx = canvas.getContext('2d');
-        const boardSize = 15;
-        const cellSize = 25;
-
-        let board = [];
-        let currentPlayer = 'black';
-        let gameOver = false;
-
-        function init() {
-            for (let i = 0; i < boardSize; i++) {
-                board[i] = [];
-                for (let j = 0; j < boardSize; j++) {
-                    board[i][j] = '';
-                }
-            }
-            drawBoard();
-        }
-
-        function drawBoard() {
-            ctx.beginPath();
-            ctx.strokeStyle = '#000';
-
-            for (let i = 0; i <= boardSize; i++) {
-                ctx.moveTo(i * cellSize + cellSize / 2, cellSize / 2);
-                ctx.lineTo(i * cellSize + cellSize / 2, boardSize * cellSize + cellSize / 2);
-            }
-
-            for (let j = 0; j <= boardSize; j++) {
-                ctx.moveTo(cellSize / 2, j * cellSize + cellSize / 2);
-                ctx.lineTo(boardSize * cellSize + cellSize / 2, j * cellSize + cellSize / 2);
-            }
-
-            ctx.stroke();
-            ctx.closePath();
-        }
-
-        function drawPiece(x, y, color) {
-            ctx.beginPath();
-            ctx.arc(x * cellSize + cellSize / 2, y * cellSize + cellSize / 2, cellSize / 2 - 2, 0, 2 * Math.PI);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function handleClick(event) {
-            if (gameOver) {
-                return;
-            }
-
-            let x = Math.floor(event.offsetX / cellSize);
-            let y = Math.floor(event.offsetY / cellSize);
-
-            if (board[x][y] === '') {
-                board[x][y] = currentPlayer;
-                drawPiece(x, y, currentPlayer === 'black'? 'black' : 'white');
-
-                if (checkForWin(x, y)) {
-                    gameOver = true;
-                    document.getElementById('gameOver').innerHTML = currentPlayer === 'black'? '黑棋获胜！' : '白棋获胜！';
-                    document.getElementById('gameOver').classList.add('win');
-                    document.getElementById('gameOver').style.display = 'block';
-                }
-
-                currentPlayer = currentPlayer === 'black'? 'white' : 'black';
-            }
-        }
-
-        function checkForWin(x, y) {
-            let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
-
-            for (let direction of directions) {
-                let count = 1;
-
-                for (let i = 1; i <= 4; i++) {
-                    let newX = x + i * direction[0];
-                    let newY = y + i * direction[1];
-
-                    if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
-                        if (board[newX][newY] === currentPlayer) {
-                            count++;
-                        } else {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                for (let i = 1; i <= 4; i++) {
-                    let newX = x - i * direction[0];
-                    let newY = y - i * direction[1];
-
-                    if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
-                        if (board[newX][newY] === currentPlayer) {
-                            count++;
-                        } else {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-
-                if (count >= 5) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        function resetGame() {
-            init();
-            gameOver = false;
-            currentPlayer = 'black';
-            document.getElementById('gameOver').style.display = 'none';
-            document.getElementById('gameOver').classList.remove('win');
-        }
-
-        canvas.addEventListener('click', handleClick);
-
-        init();
-    </script>
+    <div class="container">
+        <img src="1.jpg" alt="动漫风格插图" class="image">
+    </div>
 </body>
 </html>
