@@ -1,39 +1,66 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动漫风格插图</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echo</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+      /* 主要是text-shadow和transform搭配动画的巧妙运用 */
+      body{
+        height: 100%;
+        background-color: #000;
+
+      }
+      .wrap {
+        width: 100%;
+        /* height: 100%; */
+        box-sizing: border-box;
+        padding: 120px;
+        background-color: #000;
+        color: transparent;
+        display: flex;
+      }
+      h3 {
+        text-shadow: 0 0 0 #fff;
+        animation: smoky 6s infinite;
+        font-size: 6rem;
+      }
+      @keyframes smoky {
+        60% {
+          text-shadow: 0 0 40px #fff;
         }
-        .container {
-            width: 100%;
-            height: 100%; /* 使容器充满整个视口 */
-            min-height: 50px; /* 最小高度为500px */
-            overflow: hidden; /* 溢出内容隐藏 */
-            position: relative; /* 设置相对定位 */
+        100% {
+          text-shadow: 0 0 20px #fff; /* 这里是重点 */
+          transform: translate3d(15rem, -8rem, 0) rotate(-40deg) skew(70deg)
+            scale(1.5);
+          opacity: 0;
         }
-        .image {
-            position: absolute; /* 绝对定位 */
-            top: 50%; /* 垂直居中 */
-            left: 50%; /* 水平居中 */
-            width: 100%; /* 宽度为100% */
-            height: auto; /* 高度自适应 */
-            min-height: 50px; /* 最小高度为500px */
-            transform: translate(-50%, -50%); /* 通过平移实现完美居中 */
-        }
+      }
+      h3:nth-child(1) {
+        animation-delay: 1s;
+      }
+      h3:nth-child(2) {
+        animation-delay: 1.4s;
+      }
+      h3:nth-child(3) {
+        animation-delay: 1.8s;
+      }
+      h3:nth-child(4) {
+        animation-delay: 2.2s;
+      }
+      h3:nth-child(5) {
+        animation-delay: 2.6s;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <img src="1.jpg" alt="动漫风格插图" class="image">
+  </head>
+  <body>
+    <div class="wrap">
+      <h3>代码</h3>
+      <h3>修仙</h3>
+      <h3>之路</h3>
+      <h3>道阻</h3>
+      <h3>且长...</h3>
     </div>
-</body>
+  </body>
 </html>
